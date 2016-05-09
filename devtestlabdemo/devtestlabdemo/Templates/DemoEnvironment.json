@@ -248,9 +248,6 @@
           "artifactsLocation": {
             "value": "[parameters('artifactsLocation')]"
           },
-          "WEBPublicDNS": {
-            "value": "[reference('webServer').outputs.webfqdn.value]"
-          },
           "WebPublicDNS": {
             "value": "[variables('domainName')]"
           },
