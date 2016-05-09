@@ -61,7 +61,7 @@
         }
     },
   "variables": {
-    "domainName": "[concat(parameters('envPrefix'), '.local')]",
+    "domainName": "[concat(parameters('envPrefix'), '.intra')]",
     "WAPPublicDNS": "[concat(parameters('envPrefix'), 'fed')]",
     "StorageBlobUrl": "[concat('https://', parameters('StorageAccount').Name, '.', parameters('StorageAccount').EndPoint)]",
     "accountid": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/',resourceGroup().name, '/providers/','Microsoft.Storage/storageAccounts/', parameters('StorageAccount').Name)]",

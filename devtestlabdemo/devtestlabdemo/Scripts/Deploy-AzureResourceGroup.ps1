@@ -4,7 +4,7 @@
 
 Param(
     [string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
-    [string] $ResourceGroupName = 'IaaSDeployforDemo',
+    [string] $ResourceGroupName = 'DevTestLab',
     [switch] $UploadArtifacts,
     [string] $StorageAccountName,
     [string] $StorageAccountResourceGroupName, 

@@ -69,7 +69,9 @@
     "wadperfcounters2": "<PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\% Disk Read Time\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"Disk active read time\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\% Disk Write Time\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"Disk active write time\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Transfers/sec\" sampleRate=\"PT15S\" unit=\"CountPerSecond\"><annotation displayName=\"Disk operations\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Reads/sec\" sampleRate=\"PT15S\" unit=\"CountPerSecond\"><annotation displayName=\"Disk read operations\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Writes/sec\" sampleRate=\"PT15S\" unit=\"CountPerSecond\"><annotation displayName=\"Disk write operations\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Bytes/sec\" sampleRate=\"PT15S\" unit=\"BytesPerSecond\"><annotation displayName=\"Disk speed\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Read Bytes/sec\" sampleRate=\"PT15S\" unit=\"BytesPerSecond\"><annotation displayName=\"Disk read speed\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Write Bytes/sec\" sampleRate=\"PT15S\" unit=\"BytesPerSecond\"><annotation displayName=\"Disk write speed\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\LogicalDisk(_Total)\\% Free Space\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"Disk free space (percentage)\" locale=\"en-us\"/></PerformanceCounterConfiguration></PerformanceCounters>",
     "wadcfgxstart": "[concat(variables('wadlogs'), variables('wadperfcounters1'), variables('wadperfcounters2'), '<Metrics resourceId=\"')]",
     "wadmetricsresourceid": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name , '/providers/', 'Microsoft.Compute/virtualMachines/', parameters('envPrefix'),parameters('vmName'))]",
-    "wadcfgxend": "><MetricAggregation scheduledTransferPeriod=\"PT1H\"/><MetricAggregation scheduledTransferPeriod=\"PT1M\"/></Metrics></DiagnosticMonitorConfiguration></WadCfg>"
+    "wadcfgxend": "><MetricAggregation scheduledTransferPeriod=\"PT1H\"/><MetricAggregation scheduledTransferPeriod=\"PT1M\"/></Metrics></DiagnosticMonitorConfiguration></WadCfg>",
+    "WAPPublicDNS": "[concat(parameters('envPrefix'), 'fed')]",
+    "WebPublicDNS": "[concat(parameters('envPrefix'), 'api')]"
   },
     "resources": [
         {
@@ -80,7 +82,7 @@
             "dependsOn": [
             ],
             "tags": {
-                "displayName": "DomainControllerNic"
+                "displayName": "SQLNic"
             },
             "properties": {
                 "ipConfigurations": [
@@ -96,107 +98,118 @@
                 ]
             }
         },
-      {
-        "name": "[concat(parameters('envPrefix'),parameters('vmName'))]",
-        "type": "Microsoft.Compute/virtualMachines",
-        "location": "[parameters('VirtualNetwork').Location]",
-        "apiVersion": "2015-06-15",
-        "dependsOn": [
-          "[concat(parameters('envPrefix'),parameters('vmName'),'nic')]"
-        ],
-        "tags": {
-          "displayName": "DomainController"
-        },
-        "properties": {
-          "hardwareProfile": {
-            "vmSize": "[parameters('vmSize')]"
-          },
-          "osProfile": {
-            "computerName": "[concat(parameters('envPrefix'),parameters('vmName'))]",
-            "adminUsername": "[parameters('adminUsername')]",
-            "adminPassword": "[parameters('adminPassword')]"
-          },
-          "storageProfile": {
-            "imageReference": {
-              "publisher": "[parameters('vmImageReference').publisher]",
-              "offer": "[parameters('vmImageReference').offer]",
-              "sku": "[parameters('vmImageReference').sku]",
-              "version": "latest"
+        {
+            "name": "[concat(parameters('envPrefix'),parameters('vmName'))]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "location": "[parameters('VirtualNetwork').Location]",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [
+                "[concat(parameters('envPrefix'),parameters('vmName'),'nic')]"
+            ],
+            "tags": {
+                "displayName": "SQL"
             },
-            "osDisk": {
-              "name": "[concat(parameters('envPrefix'),parameters('vmName'), '-os-disk')]",
-              "vhd": {
-                "uri": "[concat(variables('StorageBlobUrl'), '/vhds/', parameters('envPrefix'),parameters('vmName'), 'os.vhd')]"
-              },
-              "caching": "ReadWrite",
-              "createOption": "FromImage"
-            },
-            "dataDisks": [
-              {
-                "vhd": {
-                  "uri": "[concat(variables('StorageBlobUrl'), '/vhds/', parameters('envPrefix'),parameters('vmName'),'data-1.vhd')]"
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
                 },
-                "name": "[concat(parameters('envPrefix'),parameters('vmName'),'datadisk1')]",
-                "createOption": "empty",
-                "caching": "None",
-                "diskSizeGB": "128",
-                "lun": 0
-              }
-            ]
-          },
-          "networkProfile": {
-            "networkInterfaces": [
-              {
-                "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('envPrefix'),parameters('vmName'),'nic'))]"
-              }
-            ]
-          },
-          "diagnosticsProfile": {
-            "bootDiagnostics": {
-              "enabled": "true",
-              "storageUri": "[variables('StorageBlobUrl')]"
-            }
-          }
+                "osProfile": {
+                    "computerName": "[concat(parameters('envPrefix'),parameters('vmName'))]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('vmImageReference').publisher]",
+                        "offer": "[parameters('vmImageReference').offer]",
+                        "sku": "[parameters('vmImageReference').sku]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(parameters('envPrefix'),parameters('vmName'), '-os-disk')]",
+                        "vhd": {
+                            "uri": "[concat(variables('StorageBlobUrl'), '/vhds/', parameters('envPrefix'),parameters('vmName'), 'os.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [
+                        {
+                            "vhd": {
+                            "uri": "[concat(variables('StorageBlobUrl'), '/vhds/', parameters('envPrefix'),parameters('vmName'),'data-1.vhd')]"
+                            },
+                            "name": "[concat(parameters('envPrefix'),parameters('vmName'),'datadisk1')]",
+                            "createOption": "empty",
+                            "caching": "None",
+                            "diskSizeGB": "128",
+                            "lun": 0
+                        },
+                        {
+                            "vhd": {
+                            "uri": "[concat(variables('StorageBlobUrl'), '/vhds/', parameters('envPrefix'),parameters('vmName'),'data-2.vhd')]"
+                            },
+                            "name": "[concat(parameters('envPrefix'),parameters('vmName'),'datadisk2')]",
+                            "createOption": "empty",
+                            "caching": "None",
+                            "diskSizeGB": "128",
+                            "lun": 0
+                        },                        
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('envPrefix'),parameters('vmName'),'nic'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": "true",
+                        "storageUri": "[variables('StorageBlobUrl')]"
+                    }
+                }
+            },
+      "resources": [
+        
+      ]
         },
-        "resources": [
-          
-        ]
-      },
-      {
-        "name": "[concat('Set',parameters('envPrefix'),parameters('vmName'),'SetStaticIP')]",
-        "type": "Microsoft.Resources/deployments",
-        "apiVersion": "2015-01-01",
-        "dependsOn": [
-          "[concat(parameters('envPrefix'),parameters('vmName'),'nic')]",
-          "[concat(parameters('envPrefix'),parameters('vmName'))]"
-        ],
-        "properties": {
-          "mode": "Incremental",
-          "templateLink": {
-            "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/SetStaticIP.json')]",
-            "contentVersion": "1.0.0.0"
-          },
-          "parameters": {
-            "VirtualNetwork": {
-              "value": "[parameters('VirtualNetwork')]"
-            },
-            "VirtualNetworkId": {
-              "value": "[parameters('VirtualNetworkId')]"
-            },
-            "nicName": {
-              "value": "[concat(parameters('envPrefix'),parameters('vmName'),'nic')]"
-            },
-            "ipAddress": {
-              "value": "[reference(concat(parameters('envPrefix'),parameters('vmName'),'nic')).ipConfigurations[0].properties.privateIPAddress]"
+        {
+            "name": "[concat('Set',parameters('envPrefix'),parameters('vmName'),'SetStaticIP')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2015-01-01",
+            "dependsOn": [
+                "[concat(parameters('envPrefix'),parameters('vmName'),'nic')]",
+                "[concat(parameters('envPrefix'),parameters('vmName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/SetStaticIP.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "VirtualNetwork": {
+                        "value": "[parameters('VirtualNetwork')]"
+                    },
+                    "VirtualNetworkId": {
+                        "value": "[parameters('VirtualNetworkId')]"
+                    },
+                    "nicName": {
+                        "value": "[concat(parameters('envPrefix'),parameters('vmName'),'nic')]"
+                    },
+                    "ipAddress": {
+                        "value": "[reference(concat(parameters('envPrefix'),parameters('vmName'),'nic')).ipConfigurations[0].properties.privateIPAddress]"
+                    }
+                }
             }
-          }
         }
-      }
     ],
     "outputs": {
         "ipAddress": {
             "value": "[reference(concat(parameters('envPrefix'),parameters('vmName'),'nic')).ipConfigurations[0].properties.privateIPAddress]",
             "type": "string"
         }
+
     }
 }

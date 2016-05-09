@@ -35,7 +35,7 @@
     },
     "artifactsLocation": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/rikhepworth/ResourceTemplates/master/IaaSDeployforDemo/IaaSDeployforDemo",
+      "defaultValue": "https://raw.githubusercontent.com/pcdiks/devtestlab/master/devtestlabdemo/devtestlabdemo",
       "metadata": {
         "description": "Storage Account/GitHub base uri for required files"
       }
@@ -53,28 +53,32 @@
       "Location": "[parameters('envLocation')]",
       "Prefix": "192.168.0.0/16",
       "Subnet1Name": "Subnet-1",
-      "Subnet1Prefix": "192.168.1.0/24"
+      "Subnet1Prefix": "192.168.123.0/24"
     },
     "StdVmImageReference": {
       "publisher": "MicrosoftWindowsServer",
       "offer": "WindowsServer",
-      "sku": "2012-R2-Datacenter",
+      "sku": "Windows-Server-Technical-Preview",
       "version": "latest"
     },
-    "domainName": "[concat(parameters('envPrefix'), '.local')]",
-    "WAPPublicDNS": "[concat(parameters('envPrefix'), 'fed')]",
+    "domainName": "[concat(parameters('envPrefix'), '.intra')]",
+    "WEBPublicDNS": "[concat(parameters('envPrefix'), 'fed')]",
     "WebPublicDNS": "[concat(parameters('envPrefix'), 'api')]",
     "vmConfiguration": {
       "dc": {
         "name": "DC",
         "size": "Standard_A1"
       },
-      "adfs": {
-        "name": "ADFS",
+      "sql": {
+        "name": "SQL",
         "size": "Standard_A1"
       },
-      "wap": {
-        "name": "WAP",
+      "dir": {
+        "name": "DIR",
+        "size": "Standard_A1"
+      },
+      "web": {
+        "name": "WEB",
         "size": "Standard_A1"
       }
     }
@@ -177,7 +181,7 @@
       }
     },
     {
-      "name": "ADFSserver",
+      "name": "SQLserver",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
@@ -186,7 +190,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/ADFSserver.json')]",
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/SQLserver.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -218,16 +222,16 @@
             "value": "[parameters('artifactsLocation')]"
           },
           "vmName": {
-            "value": "[variables('vmConfiguration').adfs.name]"
+            "value": "[variables('vmConfiguration').sql.name]"
           },
           "vmSize": {
-            "value": "[variables('vmConfiguration').adfs.size]"
+            "value": "[variables('vmConfiguration').sql.size]"
           }
         }
       }
     },
     {
-      "name": "WAPServer",
+      "name": "DIRserver",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
@@ -236,7 +240,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/WAPServer.json')]",
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/DIRserver.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -268,10 +272,60 @@
             "value": "[parameters('artifactsLocation')]"
           },
           "vmName": {
-            "value": "[variables('vmConfiguration').wap.name]"
+            "value": "[variables('vmConfiguration').dir.name]"
           },
           "vmSize": {
-            "value": "[variables('vmConfiguration').wap.size]"
+            "value": "[variables('vmConfiguration').dir.size]"
+          }
+        }
+      }
+    },    
+    {
+      "name": "WEBServer",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "NetworkAndStorage"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/WEBServer.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "VirtualNetwork": {
+            "value": "[variables('VirtualNetwork')]"
+          },
+          "VirtualNetworkId": {
+            "value": "[reference('NetworkAndStorage').outputs.VirtualNetworkId.value]"
+          },
+          "StorageAccount": {
+            "value": "[variables('StorageAccount')]"
+          },
+          "StorageAccountId": {
+            "value": "[reference('NetworkAndStorage').outputs.StorageAccountId.value]"
+          },
+          "AdminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "envPrefix": {
+            "value": "[parameters('envPrefix')]"
+          },
+          "vmImageReference": {
+            "value": "[variables('StdVmImageReference')]"
+          },
+          "artifactsLocation": {
+            "value": "[parameters('artifactsLocation')]"
+          },
+          "vmName": {
+            "value": "[variables('vmConfiguration').web.name]"
+          },
+          "vmSize": {
+            "value": "[variables('vmConfiguration').web.size]"
           }
         }
       }
@@ -321,8 +375,9 @@
       "dependsOn": [
         "DomainController",
         "DomainControllerDSC",
-        "ADFSserverDSC",
-        "WAPServerDSC"
+        "SQLserverDSC",
+        "DIRserverDSC",
+        "WEBServerDSC"
       ],
       "properties": {
         "mode": "Incremental",
@@ -346,8 +401,8 @@
           "artifactsLocation": {
             "value": "[parameters('artifactsLocation')]"
           },
-          "WAPPublicDNS": {
-            "value": "[reference('WAPServer').outputs.wapfqdn.value]"
+          "WEBPublicDNS": {
+            "value": "[reference('webServer').outputs.webfqdn.value]"
           },
           "WebPublicDNS": {
             "value": "[variables('domainName')]"
@@ -359,14 +414,14 @@
       }
     },
     {
-      "name": "ADFSserverDSC",
+      "name": "SQLserverDSC",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "dependsOn": [ "DomainControllerDSC", "ADFSserver", "UpdateVNetDNS" ],
+      "dependsOn": [ "DomainControllerDSC", "SQLserver", "UpdateVNetDNS" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/ADFSserverDSC.json')]",
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/SQLserverDSC.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -389,7 +444,7 @@
             "value": "[variables('domainName')]"
           },
           "vmName": {
-            "value": "[variables('vmConfiguration').adfs.name]"
+            "value": "[variables('vmConfiguration').sql.name]"
           },
           "vmDCName": {
             "value": "[variables('vmConfiguration').dc.name]"
@@ -398,14 +453,14 @@
       }
     },
     {
-      "name": "ADFSserverCS",
+      "name": "SQLserverCS",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [ "DomainControllerCS" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/ADFSserverCS.json')]",
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/SQLserverCS.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -424,14 +479,14 @@
           "artifactsLocation": {
             "value": "[parameters('artifactsLocation')]"
           },
-          "WAPPublicDNS": {
-            "value": "[reference('WAPServer').outputs.wapfqdn.value]"
+          "WEBPublicDNS": {
+            "value": "[reference('webServer').outputs.webfqdn.value]"
           },
           "WebPublicDNS": {
             "value": "[variables('domainName')]"
           },
           "vmName": {
-            "value": "[variables('vmConfiguration').adfs.name]"
+            "value": "[variables('vmConfiguration').sql.name]"
           },
           "vmDCName": {
             "value": "[variables('vmConfiguration').dc.name]"
@@ -441,14 +496,14 @@
       }
     },
     {
-      "name": "WAPServerDSC",
+      "name": "WEBServerDSC",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "dependsOn": [ "DomainControllerDSC", "WAPServer", "UpdateVNetDNS" ],
+      "dependsOn": [ "DomainControllerDSC", "WEBServer", "UpdateVNetDNS" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/WAPServerDSC.json')]",
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/WEBServerDSC.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -471,20 +526,20 @@
             "value": "[variables('domainName')]"
           },
           "vmName": {
-            "value": "[variables('vmConfiguration').wap.name]"
+            "value": "[variables('vmConfiguration').web.name]"
           }
         }
       }
     },
     {
-      "name": "WAPServerCS",
+      "name": "WEBServerCS",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "dependsOn": [ "ADFSserverCS" ],
+      "dependsOn": [ "SQLserverCS" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/WAPServerCS.json')]",
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/WEBServerCS.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -503,17 +558,17 @@
           "artifactsLocation": {
             "value": "[parameters('artifactsLocation')]"
           },
-          "WAPPublicDNS": {
-            "value": "[reference('WAPServer').outputs.wapfqdn.value]"
+          "WEBPublicDNS": {
+            "value": "[reference('WEBServer').outputs.webfqdn.value]"
           },
           "vmName": {
-            "value": "[variables('vmConfiguration').wap.name]"
+            "value": "[variables('vmConfiguration').web.name]"
           },
           "vmDCName": {
             "value": "[variables('vmConfiguration').dc.name]"
           },
-          "vmADFSName": {
-            "value": "[variables('vmConfiguration').adfs.name]"
+          "vmSQLName": {
+            "value": "[variables('vmConfiguration').sql.name]"
           }
 
         }

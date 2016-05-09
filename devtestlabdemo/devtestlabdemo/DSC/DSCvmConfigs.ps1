@@ -127,7 +127,7 @@ configuration DomainController
 # ADFS Server
 #
 
-configuration ADFSserver
+configuration SQLserver
 {
     param
     (
@@ -150,11 +150,11 @@ configuration ADFSserver
 
     Node localhost
     {
-        WindowsFeature ADFSInstall 
-        { 
-            Ensure = "Present" 
-            Name = "ADFS-Federation"
-        }  
+        #WindowsFeature ADFSInstall 
+        #{ 
+        #    Ensure = "Present" 
+        #    Name = "ADFS-Federation"
+        #}  
         WindowsFeature ADPS
         {
             Name = "RSAT-AD-PowerShell"
@@ -199,7 +199,7 @@ configuration ADFSserver
 # WAP Server
 #
 
-configuration WAPserver
+configuration DIRserver
 {
     param
     (
@@ -218,16 +218,16 @@ configuration WAPserver
     
     Node localhost
     {
-        WindowsFeature WAPInstall 
-        { 
-            Ensure = "Present" 
-            Name = "Web-Application-Proxy"
-        }  
-        WindowsFeature WAPMgmt 
-        { 
-            Ensure = "Present" 
-            Name = "RSAT-RemoteAccess"
-        }  
+        #WindowsFeature WAPInstall 
+        #{ 
+        #    Ensure = "Present" 
+        #    Name = "Web-Application-Proxy"
+        #}  
+        #WindowsFeature WAPMgmt 
+        #{ 
+        #    Ensure = "Present" 
+        #    Name = "RSAT-RemoteAccess"
+        #}  
         WindowsFeature ADPS
         {
             Name = "RSAT-AD-PowerShell"
@@ -257,6 +257,63 @@ configuration WAPserver
     }     
 }
 
+configuration WEBServer
+{
+    param
+    (
+        [Parameter(Mandatory)]
+        [String]$DomainName,
+
+		[Parameter(Mandatory)]
+        [System.Management.Automation.PSCredential]$Admincreds,
+
+        [Int]$RetryCount=20,
+        [Int]$RetryIntervalSec=30
+    )
+
+    Import-DscResource -ModuleName xComputerManagement
+	Import-DscResource -ModuleName xActiveDirectory
+    
+    Node localhost
+    {
+        #WindowsFeature WAPInstall 
+        #{ 
+        #    Ensure = "Present" 
+        #    Name = "Web-Application-Proxy"
+        #}  
+        #WindowsFeature WAPMgmt 
+        #{ 
+        #    Ensure = "Present" 
+        #    Name = "RSAT-RemoteAccess"
+        #}  
+        WindowsFeature ADPS
+        {
+            Name = "RSAT-AD-PowerShell"
+            Ensure = "Present"
+        } 
+		xWaitForADDomain DscForestWait 
+        { 
+            DomainName = $DomainName 
+            DomainUserCredential= $Admincreds
+            RetryCount = $RetryCount 
+            RetryIntervalSec = $RetryIntervalSec 
+            DependsOn = "[WindowsFeature]ADPS"      
+        }
+		xComputer DomainJoin
+        {
+            Name = $env:COMPUTERNAME
+            DomainName = $DomainName
+            Credential = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($Admincreds.UserName)", $Admincreds.Password)
+			DependsOn = "[xWaitForADDomain]DscForestWait"
+        }
+
+        LocalConfigurationManager 
+        {
+		    DebugMode = 'All'
+            RebootNodeIfNeeded = $true
+        }
+    }     
+}
 configuration DomainJoin
 {
     param
