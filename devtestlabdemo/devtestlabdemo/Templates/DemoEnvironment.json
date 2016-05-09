@@ -68,18 +68,6 @@
       "dc": {
         "name": "DC",
         "size": "Standard_A1"
-      },
-      "sql": {
-        "name": "SQL",
-        "size": "Standard_A1"
-      },
-      "dir": {
-        "name": "DIR",
-        "size": "Standard_A1"
-      },
-      "web": {
-        "name": "WEB",
-        "size": "Standard_A1"
       }
     }
   },
