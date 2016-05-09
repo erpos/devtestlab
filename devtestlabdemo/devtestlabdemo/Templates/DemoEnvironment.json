@@ -62,8 +62,6 @@
       "version": "latest"
     },
     "domainName": "[concat(parameters('envPrefix'), '.intra')]",
-    "WEBPublicDNS": "[concat(parameters('envPrefix'), 'fed')]",
-    "WebPublicDNS": "[concat(parameters('envPrefix'), 'api')]",
     "vmConfiguration": {
       "dc": {
         "name": "DC",
@@ -235,9 +233,6 @@
           },
           "artifactsLocation": {
             "value": "[parameters('artifactsLocation')]"
-          },
-          "WebPublicDNS": {
-            "value": "[variables('domainName')]"
           },
           "vmName": {
             "value": "[variables('vmConfiguration').dc.name]"
