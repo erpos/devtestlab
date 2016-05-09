@@ -573,6 +573,85 @@
 
         }
       }
+    },
+    {
+      "name": "DirServerDSC",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [ "DomainControllerDSC", "UpdateVNetDNS" ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/DirServerDSC.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "VirtualNetwork": {
+            "value": "[variables('VirtualNetwork')]"
+          },
+          "AdminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "envPrefix": {
+            "value": "[parameters('envPrefix')]"
+          },
+          "artifactsLocation": {
+            "value": "[parameters('artifactsLocation')]"
+          },
+          "domainName": {
+            "value": "[variables('domainName')]"
+          },
+          "vmName": {
+            "value": "[variables('vmConfiguration').dir.name]"
+          }
+        }
+      }
+    },
+    {
+      "name": "DirServerCS",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [ "SQLserverCS" ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/DirServerCS.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "VirtualNetwork": {
+            "value": "[variables('VirtualNetwork')]"
+          },
+          "AdminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "envPrefix": {
+            "value": "[parameters('envPrefix')]"
+          },
+          "artifactsLocation": {
+            "value": "[parameters('artifactsLocation')]"
+          },
+          "WEBPublicDNS": {
+            "value": "[reference('WEBServer').outputs.webfqdn.value]"
+          },
+          "vmName": {
+            "value": "[variables('vmConfiguration').dir.name]"
+          },
+          "vmDCName": {
+            "value": "[variables('vmConfiguration').dc.name]"
+          },
+          "vmSQLName": {
+            "value": "[variables('vmConfiguration').sql.name]"
+          }
+
+        }
+      }
     }
   ],
   "outputs": {
