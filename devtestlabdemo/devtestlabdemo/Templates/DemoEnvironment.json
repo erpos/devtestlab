@@ -575,14 +575,14 @@
       }
     },
     {
-      "name": "DirServerDSC",
+      "name": "DIRserverDSC",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [ "DomainControllerDSC", "UpdateVNetDNS" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/DirServerDSC.json')]",
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/DIRserverDSC.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
