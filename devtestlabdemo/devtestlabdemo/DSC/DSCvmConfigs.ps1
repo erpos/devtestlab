@@ -122,7 +122,7 @@ configuration DomainController
         }
    }
 } 
-
+<#
 #
 # ADFS Server
 #
@@ -314,6 +314,8 @@ configuration WEBServer
         }
     }     
 }
+#>
+
 configuration DomainJoin
 {
     param
