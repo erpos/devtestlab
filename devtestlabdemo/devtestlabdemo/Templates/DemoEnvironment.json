@@ -4,14 +4,14 @@
   "parameters": {
     "envPrefix": {
       "type": "string",
-      "defaultValue": "demo",
+      "defaultValue": "S4BLab",
       "metadata": {
         "description": "Common prefix for all resource naming"
       }
     },
     "envLocation": {
       "type": "string",
-      "defaultValue": "North Europe",
+      "defaultValue": "West Europe",
       "allowedValues": [
         "North Europe",
         "West Europe"
