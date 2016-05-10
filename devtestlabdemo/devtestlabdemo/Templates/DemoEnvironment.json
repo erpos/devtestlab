@@ -62,6 +62,7 @@
       "version": "latest"
     },
     "domainName": "[concat(parameters('envPrefix'), '.intra')]",
+    "DCPublicDNS": "[concat(parameters('envPrefix'), 'fed')]",
     "vmConfiguration": {
       "dc": {
         "name": "DC",
