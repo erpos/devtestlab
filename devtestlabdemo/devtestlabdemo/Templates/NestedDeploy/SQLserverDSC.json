@@ -60,7 +60,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "modulesUrl": "[concat(parameters('artifactsLocation'), '/DSC/', 'dsc.zip')]",
-                    "configurationFunction": "DSCvmConfigs.ps1\\ADFSserver",
+                    "configurationFunction": "DSCvmConfigs.ps1\\SQLserver",
                     "properties": {
                         "domainName": "[parameters('domainName')]",
                         "vmDCName": "[concat(parameters('envPrefix'),parameters('vmDCName'))]",

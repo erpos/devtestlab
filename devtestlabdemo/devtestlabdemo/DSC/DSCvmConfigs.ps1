@@ -122,9 +122,9 @@ configuration DomainController
         }
    }
 } 
-<#
+
 #
-# ADFS Server
+# SQL Server
 #
 
 configuration SQLserver
@@ -195,7 +195,7 @@ configuration SQLserver
     }     
 }
 
-#
+<#
 # WAP Server
 #
 
