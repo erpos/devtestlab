@@ -66,6 +66,10 @@
       "dc": {
         "name": "DC",
         "size": "Standard_A1"
+      },
+      "sql": {
+        "name": "SQL",
+        "size": "Standard_A1"
       }
     }
   },
@@ -162,6 +166,56 @@
           },
           "DNSaddress": {
             "value": "[reference('DomainController').outputs.ipAddress.value]"
+          }
+        }
+      }
+    },
+    {
+      "name": "SQLserver",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "NetworkAndStorage"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/SQLserver.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "VirtualNetwork": {
+            "value": "[variables('VirtualNetwork')]"
+          },
+          "VirtualNetworkId": {
+            "value": "[reference('NetworkAndStorage').outputs.VirtualNetworkId.value]"
+          },
+          "StorageAccount": {
+            "value": "[variables('StorageAccount')]"
+          },
+          "StorageAccountId": {
+            "value": "[reference('NetworkAndStorage').outputs.StorageAccountId.value]"
+          },
+          "AdminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "envPrefix": {
+            "value": "[parameters('envPrefix')]"
+          },
+          "vmImageReference": {
+            "value": "[variables('StdVmImageReference')]"
+          },
+          "artifactsLocation": {
+            "value": "[parameters('artifactsLocation')]"
+          },
+          "vmName": {
+            "value": "[variables('vmConfiguration').sql.name]"
+          },
+          "vmSize": {
+            "value": "[variables('vmConfiguration').sql.size]"
           }
         }
       }
