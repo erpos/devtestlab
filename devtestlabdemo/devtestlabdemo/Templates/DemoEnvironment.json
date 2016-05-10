@@ -265,7 +265,8 @@
       "apiVersion": "2015-01-01",
       "dependsOn": [
         "DomainController",
-        "DomainControllerDSC"
+        "DomainControllerDSC",
+        "SQLserver"
       ],
       "properties": {
         "mode": "Incremental",
