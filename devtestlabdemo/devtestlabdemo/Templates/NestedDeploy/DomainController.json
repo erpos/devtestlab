@@ -62,7 +62,7 @@
     },
   "variables": {
     "domainName": "[concat(parameters('envPrefix'), '.intra')]",
-    "DCPublicDNS": "[concat(parameters('envPrefix'), 'fed')]",
+    "DCPublicDNS": "'vmName'",
     "StorageBlobUrl": "[concat('https://', parameters('StorageAccount').Name, '.', parameters('StorageAccount').EndPoint)]",
     "accountid": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/',resourceGroup().name, '/providers/','Microsoft.Storage/storageAccounts/', parameters('StorageAccount').Name)]",
     "wadlogs": "<WadCfg> <DiagnosticMonitorConfiguration overallQuotaInMB=\"4096\" xmlns=\"http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration\"> <DiagnosticInfrastructureLogs scheduledTransferLogLevelFilter=\"Error\"/> <WindowsEventLog scheduledTransferPeriod=\"PT1M\" > <DataSource name=\"Application!*[System[(Level = 1 or Level = 2)]]\" /> <DataSource name=\"Security!*[System[(Level = 1 or Level = 2)]]\" /> <DataSource name=\"System!*[System[(Level = 1 or Level = 2)]]\" /></WindowsEventLog>",
@@ -223,6 +223,7 @@
         "apiVersion": "2015-01-01",
         "dependsOn": [
           "[concat(parameters('envPrefix'),parameters('vmName'),'nic')]",
+          "[concat(parameters('envPrefix'),parameters('vmName'),'nsg')]",
           "[concat(parameters('envPrefix'),parameters('vmName'))]"
         ],
         "properties": {
@@ -243,6 +244,9 @@
             },
             "ipAddress": {
               "value": "[reference(concat(parameters('envPrefix'),parameters('vmName'),'nic')).ipConfigurations[0].properties.privateIPAddress]"
+            },
+            "pipID": {
+                "value": "[resourceId('Microsoft.Network/publicIPAddresses',concat(parameters('envPrefix'),parameters('vmName'),'pip'))]"
             }
           }
         }
