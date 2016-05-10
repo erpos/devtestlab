@@ -62,7 +62,7 @@
     },
   "variables": {
     "domainName": "[concat(parameters('envPrefix'), '.intra')]",
-    "DCPublicDNS": "'vmName'",
+    "DCPublicDNS": "parameters('vmName')",
     "StorageBlobUrl": "[concat('https://', parameters('StorageAccount').Name, '.', parameters('StorageAccount').EndPoint)]",
     "accountid": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/',resourceGroup().name, '/providers/','Microsoft.Storage/storageAccounts/', parameters('StorageAccount').Name)]",
     "wadlogs": "<WadCfg> <DiagnosticMonitorConfiguration overallQuotaInMB=\"4096\" xmlns=\"http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration\"> <DiagnosticInfrastructureLogs scheduledTransferLogLevelFilter=\"Error\"/> <WindowsEventLog scheduledTransferPeriod=\"PT1M\" > <DataSource name=\"Application!*[System[(Level = 1 or Level = 2)]]\" /> <DataSource name=\"Security!*[System[(Level = 1 or Level = 2)]]\" /> <DataSource name=\"System!*[System[(Level = 1 or Level = 2)]]\" /></WindowsEventLog>",
