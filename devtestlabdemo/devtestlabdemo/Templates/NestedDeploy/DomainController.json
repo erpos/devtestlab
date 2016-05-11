@@ -62,7 +62,6 @@
     },
   "variables": {
     "domainName": "[concat(parameters('envPrefix'), '.intra')]",
-    "DCPublicDNS": "parameters('vmName')",
     "StorageBlobUrl": "[concat('https://', parameters('StorageAccount').Name, '.', parameters('StorageAccount').EndPoint)]",
     "accountid": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/',resourceGroup().name, '/providers/','Microsoft.Storage/storageAccounts/', parameters('StorageAccount').Name)]",
     "wadlogs": "<WadCfg> <DiagnosticMonitorConfiguration overallQuotaInMB=\"4096\" xmlns=\"http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration\"> <DiagnosticInfrastructureLogs scheduledTransferLogLevelFilter=\"Error\"/> <WindowsEventLog scheduledTransferPeriod=\"PT1M\" > <DataSource name=\"Application!*[System[(Level = 1 or Level = 2)]]\" /> <DataSource name=\"Security!*[System[(Level = 1 or Level = 2)]]\" /> <DataSource name=\"System!*[System[(Level = 1 or Level = 2)]]\" /></WindowsEventLog>",
@@ -73,23 +72,6 @@
     "wadcfgxend": "><MetricAggregation scheduledTransferPeriod=\"PT1H\"/><MetricAggregation scheduledTransferPeriod=\"PT1M\"/></Metrics></DiagnosticMonitorConfiguration></WadCfg>"
   },
     "resources": [
-        {
-            "name": "[concat(parameters('envPrefix'),parameters('vmName'),'pip')]",
-            "type": "Microsoft.Network/publicIPAddresses",
-            "location": "[parameters('VirtualNetwork').Location]",
-            "apiVersion": "2015-05-01-preview",
-            "dependsOn": [
-            ],
-            "tags": {
-                "displayName": "vmDCpublicip"
-            },
-            "properties": {
-                "publicIPAllocationMethod": "Dynamic",
-                "dnsSettings": {
-                    "domainNameLabel": "[variables('DCPublicDNS')]"
-                }
-            }
-        },
         {
             "name": "[concat(parameters('envPrefix'),parameters('vmName'),'nic')]",
             "type": "Microsoft.Network/networkInterfaces",
@@ -112,43 +94,6 @@
                         }
                     }
                 ]
-            }
-        },
-        {
-            "name": "[concat(parameters('envPrefix'),parameters('vmName'),'nsg')]",
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "location": "[parameters('VirtualNetwork').Location]",
-            "apiVersion": "2015-05-01-preview",
-            "dependsOn": [
-                "[concat(parameters('envPrefix'),parameters('vmName'),'nic')]"
-            ],
-
-            "tags": {
-                "displayName": "DCserverNSG"
-            },
-
-            "properties": {
-                "securityRules": [
-                    {
-                        "name": "default-allow-rdp",
-                        "properties": {
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "3389",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 1000,
-                            "direction": "Inbound"
-                        }
-                    }
-                ],
-                "subnets": [
-                    {
-                        "id": "[concat(parameters('VirtualNetworkId'),'/subnets/',parameters('VirtualNetwork').Subnet1Name)]"
-                    }
-                ]
-
             }
         },
        {
@@ -223,7 +168,6 @@
         "apiVersion": "2015-01-01",
         "dependsOn": [
           "[concat(parameters('envPrefix'),parameters('vmName'),'nic')]",
-          "[concat(parameters('envPrefix'),parameters('vmName'),'nsg')]",
           "[concat(parameters('envPrefix'),parameters('vmName'))]"
         ],
         "properties": {
@@ -244,9 +188,6 @@
             },
             "ipAddress": {
               "value": "[reference(concat(parameters('envPrefix'),parameters('vmName'),'nic')).ipConfigurations[0].properties.privateIPAddress]"
-            },
-            "pipID": {
-                "value": "[resourceId('Microsoft.Network/publicIPAddresses',concat(parameters('envPrefix'),parameters('vmName'),'pip'))]"
             }
           }
         }
