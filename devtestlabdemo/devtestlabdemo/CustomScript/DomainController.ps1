@@ -68,7 +68,7 @@ Invoke-Command  -Credential $credential -ComputerName $env:COMPUTERNAME -ScriptB
 	Import-Module .\DeployFunctions.ps1
 
 	#Enable CredSSP in server role for delegated credentials
-	Enable-WSManCredSSP -Role Server –Force
+	Enable-WSManCredSSP -Role Server -Force
 
 	#Create OU for service accounts, computer group; create service accounts
 	Add-ADServiceAccounts -domain $env:USERDNSDOMAIN -serviceAccountOU $serviceAccountOU -password $vmAdminPassword
@@ -81,7 +81,9 @@ Invoke-Command  -Credential $credential -ComputerName $env:COMPUTERNAME -ScriptB
 	Set-tsCertificateTemplateAcl -certificateTemplate $certificateTemplate -computers "EnvironmentComputers"
 
 	# Generate SSL Certificates
-
+	
+	$tsServiceName = ($Env:Computername).tolower()
+	$fsServiceName = $tsServiceName + "." + ($env:USERDNSDOMAIN).tolower()
 	$fsCertificateSubject = $fsServiceName
 	Generate-SSLCertificate -certificateSubject $fsCertificateSubject -certificateTemplate $certificateTemplate
 	$tsCertificateSubject = $tsServiceName + ".northeurope.cloudapp.azure.com"

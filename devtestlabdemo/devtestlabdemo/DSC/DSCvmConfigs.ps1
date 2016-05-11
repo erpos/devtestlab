@@ -78,6 +78,18 @@ configuration DomainController
                Name = 'RSAT-ADCS-Mgmt'
 			   DependsOn = '[xADDomain]FirstDS'
         }
+        WindowsFeature RSAT-ADDS
+        {
+               Ensure = 'Present'
+               Name = 'RSAT-ADDS'
+               DependsOn = '[xADDomain]FirstDS'
+        }
+        WindowsFeature RSAT-DNS-Server
+        {
+               Ensure = 'Present'
+               Name = 'RSAT-DNS-Server'
+               DependsOn = '[xADDomain]FirstDS'
+        }
         File SrcFolder
         {
             DestinationPath = "C:\src"
@@ -140,8 +152,8 @@ configuration SQLserver
 		[Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]$Admincreds,
 
-        [Int]$RetryCount=20,
-        [Int]$RetryIntervalSec=30
+        [Int]$RetryCount=40,
+        [Int]$RetryIntervalSec=60
     )
 
     Import-DscResource -ModuleName xComputerManagement
