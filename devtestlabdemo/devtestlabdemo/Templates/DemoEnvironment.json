@@ -175,7 +175,8 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
-        "NetworkAndStorage"
+        "NetworkAndStorage",
+        "DomainControllerDSC"
       ],
       "properties": {
         "mode": "Incremental",
