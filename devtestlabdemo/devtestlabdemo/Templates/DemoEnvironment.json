@@ -61,6 +61,12 @@
       "sku": "Windows-Server-Technical-Preview",
       "version": "latest"
     },
+    "SqlVmImageReference": {
+      "publisher":"MicrosoftSQLServer",
+      "offer":"SQL2014SP1-WS2012R2",
+      "sku":"Enterprise",
+      "version":"latest"      
+    }
     "domainName": "[concat(parameters('envPrefix'), '.intra')]",
     "vmConfiguration": {
       "dc": {
@@ -207,7 +213,7 @@
             "value": "[parameters('envPrefix')]"
           },
           "vmImageReference": {
-            "value": "[variables('StdVmImageReference')]"
+            "value": "[variables('SqlVmImageReference')]"
           },
           "artifactsLocation": {
             "value": "[parameters('artifactsLocation')]"
