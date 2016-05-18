@@ -56,7 +56,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "modulesUrl": "[concat(parameters('artifactsLocation'), '/DSC/', 'dsc.zip')]",
-                    "configurationFunction": "DSCvmConfigs.ps1\\WAPserver",
+                    "configurationFunction": "DSCvmConfigs.ps1\\WEBserver",
                     "properties": {
                         "domainName": "[parameters('domainName')]",
                         "adminCreds": {
@@ -71,7 +71,7 @@
                     }
                 }
             }
-        },
+        }
     ],
     "outputs": {
     }

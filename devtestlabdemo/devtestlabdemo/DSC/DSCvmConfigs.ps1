@@ -268,6 +268,7 @@ configuration DIRserver
         }
     }     
 }
+#>
 
 configuration WEBServer
 {
@@ -303,6 +304,13 @@ configuration WEBServer
             Name = "RSAT-AD-PowerShell"
             Ensure = "Present"
         } 
+        
+        WindowsFeature IIS
+        {
+            Name = "Web-Server,Web-Mgmt-Tools,Web-Mgmt-Console"
+            Ensure = "Present"
+        }
+        
 		xWaitForADDomain DscForestWait 
         { 
             DomainName = $DomainName 
@@ -326,7 +334,7 @@ configuration WEBServer
         }
     }     
 }
-#>
+
 
 configuration DomainJoin
 {
