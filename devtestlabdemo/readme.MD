@@ -1,5 +1,5 @@
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fpcdiks%2Fdevtestlab%2Fmaster%2Fdevtestlabdemo%2Fdevtestlabdemo%2FTemplates%2FDemoEnvironment.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
+    <img src="http://azuredeploy.net/deploybutton.png"/></a>
 
 # IaaS Environment Resource Template for Demos #
 This project contains the files used in my session demo around Azure Resource Templates.
