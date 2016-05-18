@@ -121,7 +121,7 @@
                         "publisher": "[parameters('vmImageReference').publisher]",
                         "offer": "[parameters('vmImageReference').offer]",
                         "sku": "[parameters('vmImageReference').sku]",
-                        "version": "[parameters('vmImageReference').latest]"
+                        "version": "[parameters('vmImageReference').version]"
                     },
                     "osDisk": {
                         "name": "[concat(parameters('envPrefix'),parameters('vmName'), '-os-disk')]",
