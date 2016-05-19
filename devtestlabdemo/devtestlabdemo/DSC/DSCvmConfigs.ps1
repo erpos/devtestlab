@@ -23,6 +23,7 @@ configuration DomainController
     Import-DscResource -ModuleName xNetworking
     Import-DscResource -ModuleName xSmbShare
     Import-DscResource -ModuleName xStorage
+    Import-DscResource -ModuleName xShortcut
 
     [System.Management.Automation.PSCredential ]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($Admincreds.UserName)", $Admincreds.Password)
     $Interface=Get-NetAdapter|Where Name -Like "Ethernet*"|Select-Object -First 1
@@ -65,6 +66,7 @@ configuration DomainController
             DatabasePath = "F:\NTDS"
             LogPath = "F:\NTDS"
             SysvolPath = "F:\SYSVOL"
+            DependsOn = '[xDisk]ADDataDisk'
         }
         WindowsFeature ADCS-Cert-Authority
         {
@@ -126,6 +128,14 @@ configuration DomainController
             Credential = $DomainCreds
             DependsOn = '[WindowsFeature]ADCS-Web-Enrollment','[xADCSCertificationAuthority]ADCS'
         } 
+        xCreateShortcut Logoff 
+        {
+            Ensure = "Present"
+            ShortCutName = "C:\Users\Public\Desktop\Logoff.lnk"
+            Executable = "C:\Windows\System32\Logoff.exe"
+            Description = "Logoff from Windows"
+            IconLocation = "%SystemRoot%\system32\SHELL32.dll,44"
+        }
 		 
         LocalConfigurationManager 
         {
@@ -158,6 +168,9 @@ configuration SQLserver
 
     Import-DscResource -ModuleName xComputerManagement
 	Import-DscResource -ModuleName xActiveDirectory
+    Import-DscResource -ModuleName xStorage
+    Import-DscResource -ModuleName xShortcut
+
     $fileShare = "\\"+$vmDCName+"."+$DomainName+"\src"
 
     Node localhost
@@ -173,6 +186,28 @@ configuration SQLserver
             Ensure = "Present"
 
         } 
+       xWaitforDisk Disk2
+        {
+             DiskNumber = 2
+             RetryIntervalSec =$RetryIntervalSec
+             RetryCount = $RetryCount
+        }
+        xDisk DataDisk2
+        {
+            DiskNumber = 2
+            DriveLetter = "F"
+        }
+       xWaitforDisk Disk3
+        {
+             DiskNumber = 3
+             RetryIntervalSec =$RetryIntervalSec
+             RetryCount = $RetryCount
+        }
+        xDisk DataDisk3
+        {
+            DiskNumber = 3
+            DriveLetter = "F"
+        }
 		xWaitForADDomain DscForestWait 
         { 
             DomainName = $DomainName 
@@ -197,6 +232,15 @@ configuration SQLserver
             Type = "Directory"
 			Credential = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($Admincreds.UserName)", $Admincreds.Password)
             DependsOn = "[xComputer]DomainJoin"
+        }
+        
+        xCreateShortcut Logoff 
+        {
+            Ensure = "Present"
+            ShortCutName = "C:\Users\Public\Desktop\Logoff.lnk"
+            Executable = "C:\Windows\System32\Logoff.exe"
+            Description = "Logoff from Windows"
+            IconLocation = "%SystemRoot%\system32\SHELL32.dll,44"
         }
 
         LocalConfigurationManager 
@@ -286,6 +330,7 @@ configuration WEBServer
 
     Import-DscResource -ModuleName xComputerManagement
 	Import-DscResource -ModuleName xActiveDirectory
+    Import-DscResource -ModuleName xShortcut
     
     Node localhost
     {
@@ -325,6 +370,14 @@ configuration WEBServer
             DomainName = $DomainName
             Credential = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($Admincreds.UserName)", $Admincreds.Password)
 			DependsOn = "[xWaitForADDomain]DscForestWait"
+        }
+        xCreateShortcut Logoff 
+        {
+            Ensure = "Present"
+            ShortCutName = "C:\Users\Public\Desktop\Logoff.lnk"
+            Executable = "C:\Windows\System32\Logoff.exe"
+            Description = "Logoff from Windows"
+            IconLocation = "%SystemRoot%\system32\SHELL32.dll,44"
         }
 
         LocalConfigurationManager 
