@@ -61,6 +61,12 @@
       "sku": "Windows-Server-Technical-Preview",
       "version": "latest"
     },
+    "DCVmImageReference": {
+      "publisher": "MicrosoftWindowsServer",
+      "offer": "WindowsServer",
+      "sku": "2012-R2-Datacenter",
+      "version": "latest"
+    },
     "SqlVmImageReference": {
       "publisher":"MicrosoftSQLServer",
       "offer":"SQL2014SP1-WS2012R2",
@@ -137,7 +143,7 @@
             "value": "[parameters('envPrefix')]"
           },
           "vmImageReference": {
-            "value": "[variables('StdVmImageReference')]"
+            "value": "[variables('DCVmImageReference')]"
           },
           "artifactsLocation": {
             "value": "[parameters('artifactsLocation')]"
