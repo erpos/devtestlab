@@ -82,6 +82,10 @@
       "sql": {
         "name": "SQL",
         "size": "Standard_A1"
+      },
+      "web": {
+        "name": "WEB",
+        "size": "Standard_A1"
       }
     }
   },
@@ -234,6 +238,56 @@
       }
     },
     {
+      "name": "WEBserver",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "NetworkAndStorage",
+        "DomainControllerDSC"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/WEBServer.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "VirtualNetwork": {
+            "value": "[variables('VirtualNetwork')]"
+          },
+          "VirtualNetworkId": {
+            "value": "[reference('NetworkAndStorage').outputs.VirtualNetworkId.value]"
+          },
+          "StorageAccount": {
+            "value": "[variables('StorageAccount')]"
+          },
+          "StorageAccountId": {
+            "value": "[reference('NetworkAndStorage').outputs.StorageAccountId.value]"
+          },
+          "AdminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "envPrefix": {
+            "value": "[parameters('envPrefix')]"
+          },
+          "vmImageReference": {
+            "value": "[variables('SqlVmImageReference')]"
+          },
+          "artifactsLocation": {
+            "value": "[parameters('artifactsLocation')]"
+          },
+          "vmName": {
+            "value": "[variables('vmConfiguration').web.name]"
+          },
+          "vmSize": {
+            "value": "[variables('vmConfiguration').web.size]"
+          }
+        }
+      }
+    },    {
       "name": "DomainControllerDSC",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
@@ -376,6 +430,82 @@
           },
           "vmName": {
             "value": "[variables('vmConfiguration').sql.name]"
+          },
+          "vmDCName": {
+            "value": "[variables('vmConfiguration').dc.name]"
+          }
+
+        }
+      }
+    },
+    {
+      "name": "WEBserverDSC",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [ "DomainControllerDSC", "WEBserver", "UpdateVNetDNS" ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/WEBServerDSC.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "VirtualNetwork": {
+            "value": "[variables('VirtualNetwork')]"
+          },
+          "AdminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "envPrefix": {
+            "value": "[parameters('envPrefix')]"
+          },
+          "artifactsLocation": {
+            "value": "[parameters('artifactsLocation')]"
+          },
+          "domainName": {
+            "value": "[variables('domainName')]"
+          },
+          "vmName": {
+            "value": "[variables('vmConfiguration').web.name]"
+          },
+          "vmDCName": {
+            "value": "[variables('vmConfiguration').dc.name]"
+          }
+        }
+      }
+    },
+    {
+      "name": "WEBserverCS",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [ "DomainControllerCS" ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('artifactsLocation'), '/Templates/NestedDeploy/WEBServerCS.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "VirtualNetwork": {
+            "value": "[variables('VirtualNetwork')]"
+          },
+          "AdminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "envPrefix": {
+            "value": "[parameters('envPrefix')]"
+          },
+          "artifactsLocation": {
+            "value": "[parameters('artifactsLocation')]"
+          },
+          "vmName": {
+            "value": "[variables('vmConfiguration').web.name]"
           },
           "vmDCName": {
             "value": "[variables('vmConfiguration').dc.name]"

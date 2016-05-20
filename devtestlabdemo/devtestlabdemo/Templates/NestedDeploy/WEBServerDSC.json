@@ -47,7 +47,7 @@
             "dependsOn": [
             ],
             "tags": {
-                "displayName": "WAPserver"
+                "displayName": "WEBserver"
             },
             "properties": {
                 "publisher": "Microsoft.Powershell",
