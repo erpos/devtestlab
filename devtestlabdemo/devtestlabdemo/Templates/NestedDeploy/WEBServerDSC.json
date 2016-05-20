@@ -34,7 +34,11 @@
         },
         "vmName": {
             "type": "string"
-        }
+        },
+        "vmDCName": {
+            "type": "string"
+
+        }        
     },
     "variables": {
     },

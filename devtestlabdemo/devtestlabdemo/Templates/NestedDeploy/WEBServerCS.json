@@ -29,9 +29,6 @@
         "artifactsLocation": {
             "type": "string"
         },
-        "WAPPublicDNS": {
-            "type": "string"
-        },
         "vmName": {
             "type": "string"
         },
