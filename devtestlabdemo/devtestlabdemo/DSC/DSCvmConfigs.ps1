@@ -195,7 +195,7 @@ configuration SQLserver
         xDisk DataDisk2
         {
             DiskNumber = 2
-            DriveLetter = "F"
+            DriveLetter = "E"
         }
        xWaitforDisk Disk3
         {
@@ -352,8 +352,22 @@ configuration WEBServer
         
         WindowsFeature IIS
         {
-            Name = "Web-Server,Web-Mgmt-Tools,Web-Mgmt-Console"
+            Name = "Web-Server"
             Ensure = "Present"
+        }
+        
+        WindowsFeature IISMGT
+        {
+            Name = "Web-Mgmt-Tools"
+            Ensure = "Present"
+            DependsOn = "[WindowsFeature]IIS"
+        }
+        
+        WindowsFeature IISMGTConsole
+        {
+            Name = "Web-Mgmt-Console"
+            Ensure = "Present"
+            DependsOn = "[WindowsFeature]IIS"
         }
         
 		xWaitForADDomain DscForestWait 
