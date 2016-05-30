@@ -55,13 +55,13 @@
       "Subnet1Name": "Subnet-1",
       "Subnet1Prefix": "192.168.123.0/24"
     },
-    "StdVmImageReference": {
+    "Server2016Image": {
       "publisher": "MicrosoftWindowsServer",
       "offer": "WindowsServer",
       "sku": "Windows-Server-Technical-Preview",
       "version": "latest"
     },
-    "DCVmImageReference": {
+    "Server2012R2Image": {
       "publisher": "MicrosoftWindowsServer",
       "offer": "WindowsServer",
       "sku": "2012-R2-Datacenter",
@@ -76,15 +76,19 @@
     "domainName": "[concat(parameters('envPrefix'), '.intra')]",
     "vmConfiguration": {
       "dc": {
-        "name": "DC",
+        "name": "dc01",
         "size": "Standard_A1"
       },
       "sql": {
-        "name": "SQL",
+        "name": "sql01",
         "size": "Standard_A1"
       },
       "web": {
-        "name": "WEB",
+        "name": "web01",
+        "size": "Standard_A1"
+      },
+      "dir": {
+        "name": "dir01",
         "size": "Standard_A1"
       }
     }
@@ -147,7 +151,7 @@
             "value": "[parameters('envPrefix')]"
           },
           "vmImageReference": {
-            "value": "[variables('DCVmImageReference')]"
+            "value": "[variables('Server2016Image')]"
           },
           "artifactsLocation": {
             "value": "[parameters('artifactsLocation')]"
@@ -274,7 +278,7 @@
             "value": "[parameters('envPrefix')]"
           },
           "vmImageReference": {
-            "value": "[variables('SqlVmImageReference')]"
+            "value": "[variables('Server2016Image')]"
           },
           "artifactsLocation": {
             "value": "[parameters('artifactsLocation')]"

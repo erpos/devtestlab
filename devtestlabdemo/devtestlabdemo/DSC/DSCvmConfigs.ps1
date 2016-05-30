@@ -330,6 +330,7 @@ configuration WEBServer
 
     Import-DscResource -ModuleName xComputerManagement
 	Import-DscResource -ModuleName xActiveDirectory
+    Import-DscResource -ModuleName xStorage
     Import-DscResource -ModuleName xShortcut
     
     Node localhost

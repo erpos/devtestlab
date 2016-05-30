@@ -41,7 +41,7 @@ Write-Verbose -Verbose "==================================="
 #		$encodedCommand = [Convert]::ToBase64String($bytes)
 
 #		Start-Process -wait "powershell.exe" -ArgumentList "-encodedcommand $encodedCommand"
-		copy-item $certPath -Destination $PSScriptRoot -Verbose
+#		copy-item $certPath -Destination $PSScriptRoot -Verbose
 
 Invoke-Command  -Credential $credential -ComputerName $env:COMPUTERNAME -ScriptBlock {
 
