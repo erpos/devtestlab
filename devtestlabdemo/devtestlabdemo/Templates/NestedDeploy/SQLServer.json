@@ -151,7 +151,7 @@
                             "caching": "None",
                             "diskSizeGB": "128",
                             "lun": 1
-                        },                        
+                        }                        
                     ]
                 },
                 "networkProfile": {
