@@ -31,7 +31,7 @@ Write-Verbose -Verbose "==================================="
 	$srcPath = "\\"+ $vmDCname + "\src"
 	$fsCertificateSubject = $fsServiceName
 	$fsCertFileName = $fsCertificateSubject+".pfx"
-	$certPath = $srcPath + "\" + $fsCertFileName
+	#$certPath = $srcPath + "\" + $fsCertFileName
 
 <#
 	#Copy cert from DC

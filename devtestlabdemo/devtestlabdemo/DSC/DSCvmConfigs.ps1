@@ -63,9 +63,9 @@ configuration DomainController
             DomainName = $DomainName
             DomainAdministratorCredential = $DomainCreds
             SafemodeAdministratorPassword = $DomainCreds
-            DatabasePath = "F:\NTDS"
-            LogPath = "F:\NTDS"
-            SysvolPath = "F:\SYSVOL"
+            #DatabasePath = "F:\NTDS"
+            #LogPath = "F:\NTDS"
+            #SysvolPath = "F:\SYSVOL"
             DependsOn = '[xDisk]ADDataDisk'
         }
         WindowsFeature ADCS-Cert-Authority
