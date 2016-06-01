@@ -157,9 +157,6 @@ configuration SQLserver
         [String]$DomainName,
 
 		[Parameter(Mandatory)]
-        [String]$vmDCName,
-
-		[Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]$Admincreds,
 
         [Int]$RetryCount=40,
@@ -170,8 +167,6 @@ configuration SQLserver
 	Import-DscResource -ModuleName xActiveDirectory
     Import-DscResource -ModuleName xStorage
     Import-DscResource -ModuleName xShortcut
-
-    $fileShare = "\\"+$vmDCName+"."+$DomainName+"\src"
 
     Node localhost
     {
@@ -224,16 +219,6 @@ configuration SQLserver
 			DependsOn = "[xWaitForADDomain]DscForestWait"
         }
 
-		File SrcCopy
-		{
-            SourcePath = $fileShare
-            DestinationPath = "c:\src"
-            Recurse = $true
-            Type = "Directory"
-			Credential = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($Admincreds.UserName)", $Admincreds.Password)
-            DependsOn = "[xComputer]DomainJoin"
-        }
-        
         xCreateShortcut Logoff 
         {
             Ensure = "Present"

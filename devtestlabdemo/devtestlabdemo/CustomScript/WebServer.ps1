@@ -83,7 +83,8 @@ Invoke-Command  -Credential $credential -ComputerName $env:COMPUTERNAME -ScriptB
 	Import-Module .\DeployFunctions.ps1
 
 
-	<#$fsCertificateSubject = $fsServiceName
+	<#
+	$fsCertificateSubject = $fsServiceName
 	$fsCertFileName = $workingDir + "\" + $fsCertificateSubject+".pfx"
 
 	Write-Verbose -Verbose "Importing sslcert $fsCertFileName"

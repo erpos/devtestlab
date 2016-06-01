@@ -27,7 +27,7 @@ Write-Verbose -Verbose "==================================="
 	$info_event = [System.Diagnostics.EventLogEntryType]::Information
 	$event.WriteEntry("ADFSserver Script Executed", $info_event, 5001)
 
-
+<#
 	$srcPath = "\\"+ $vmDCname + "\src"
 	$fsCertificateSubject = $fsServiceName
 	$fsCertFileName = $fsCertificateSubject+".pfx"
@@ -42,6 +42,7 @@ Write-Verbose -Verbose "==================================="
 
 #		Start-Process -wait "powershell.exe" -ArgumentList "-encodedcommand $encodedCommand"
 #		copy-item $certPath -Destination $PSScriptRoot -Verbose
+#>
 
 Invoke-Command  -Credential $credential -ComputerName $env:COMPUTERNAME -ScriptBlock {
 
