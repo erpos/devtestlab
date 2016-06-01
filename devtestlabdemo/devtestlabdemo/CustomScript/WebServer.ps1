@@ -1,5 +1,5 @@
 #
-# SQLServer.ps1
+# WebServer.ps1
 #
 param (
 	$vmAdminUsername,
@@ -12,7 +12,7 @@ param (
 $password =  ConvertTo-SecureString $vmAdminPassword -AsPlainText -Force
 $credential = New-Object System.Management.Automation.PSCredential("$env:USERDOMAIN\$vmAdminUsername", $password)
 
-Write-Verbose -Verbose "Entering SQLServer Script"
+Write-Verbose -Verbose "Entering WebServer Script"
 Write-Verbose -verbose "Script path: $PSScriptRoot"
 Write-Verbose -Verbose "vmAdminUsername: $vmAdminUsername"
 Write-Verbose -Verbose "vmAdminPassword: $vmAdminPassword"
@@ -25,7 +25,7 @@ Write-Verbose -Verbose "==================================="
 	$event = New-Object System.Diagnostics.EventLog("Application")
 	$event.Source = "AzureEnvironment"
 	$info_event = [System.Diagnostics.EventLogEntryType]::Information
-	$event.WriteEntry("ADFSserver Script Executed", $info_event, 5001)
+	$event.WriteEntry("WebServer Script Executed", $info_event, 5001)
 
 
 	$srcPath = "\\"+ $vmDCname + "\src"
@@ -33,15 +33,17 @@ Write-Verbose -Verbose "==================================="
 	$fsCertFileName = $fsCertificateSubject+".pfx"
 	$certPath = $srcPath + "\" + $fsCertFileName
 
+<#
 	#Copy cert from DC
 	write-verbose -Verbose "Copying $certpath to $PSScriptRoot"
-#		$powershellCommand = "& {copy-item '" + $certPath + "' '" + $workingDir + "'}"
-#		Write-Verbose -Verbose $powershellCommand
-#		$bytes = [System.Text.Encoding]::Unicode.GetBytes($powershellCommand)
-#		$encodedCommand = [Convert]::ToBase64String($bytes)
+	$powershellCommand = "& {copy-item '" + $certPath + "' '" + $workingDir + "'}"
+	Write-Verbose -Verbose $powershellCommand
+	$bytes = [System.Text.Encoding]::Unicode.GetBytes($powershellCommand)
+	$encodedCommand = [Convert]::ToBase64String($bytes)
 
-#		Start-Process -wait "powershell.exe" -ArgumentList "-encodedcommand $encodedCommand"
-		copy-item $certPath -Destination $PSScriptRoot -Verbose
+	Start-Process -wait "powershell.exe" -ArgumentList "-encodedcommand $encodedCommand"
+    copy-item $certPath -Destination $PSScriptRoot -Verbose
+#>
 
 Invoke-Command  -Credential $credential -ComputerName $env:COMPUTERNAME -ScriptBlock {
 
@@ -69,7 +71,7 @@ Invoke-Command  -Credential $credential -ComputerName $env:COMPUTERNAME -ScriptB
 	$event = New-Object System.Diagnostics.EventLog("Application")
 	$event.Source = "AzureEnvironment"
 	$info_event = [System.Diagnostics.EventLogEntryType]::Information
-	$event.WriteEntry("In ADFSserver scriptblock", $info_event, 5001)
+	$event.WriteEntry("In WebServer scriptblock", $info_event, 5001)
 
 	#go to our packages scripts folder
 	Set-Location $workingDir

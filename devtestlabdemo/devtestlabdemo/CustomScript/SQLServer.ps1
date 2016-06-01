@@ -25,7 +25,7 @@ Write-Verbose -Verbose "==================================="
 	$event = New-Object System.Diagnostics.EventLog("Application")
 	$event.Source = "AzureEnvironment"
 	$info_event = [System.Diagnostics.EventLogEntryType]::Information
-	$event.WriteEntry("ADFSserver Script Executed", $info_event, 5001)
+	$event.WriteEntry("SQLServer Script Executed", $info_event, 5001)
 
 <#
 	$srcPath = "\\"+ $vmDCname + "\src"
@@ -70,7 +70,7 @@ Invoke-Command  -Credential $credential -ComputerName $env:COMPUTERNAME -ScriptB
 	$event = New-Object System.Diagnostics.EventLog("Application")
 	$event.Source = "AzureEnvironment"
 	$info_event = [System.Diagnostics.EventLogEntryType]::Information
-	$event.WriteEntry("In ADFSserver scriptblock", $info_event, 5001)
+	$event.WriteEntry("In SQLServer scriptblock", $info_event, 5001)
 
 	#go to our packages scripts folder
 	Set-Location $workingDir

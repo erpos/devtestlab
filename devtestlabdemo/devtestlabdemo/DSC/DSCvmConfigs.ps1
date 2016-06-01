@@ -388,6 +388,84 @@ configuration WEBServer
     }     
 }
 
+configuration DIRServer
+{
+    param
+    (
+        [Parameter(Mandatory)]
+        [String]$DomainName,
+
+		[Parameter(Mandatory)]
+        [System.Management.Automation.PSCredential]$Admincreds,
+
+        [Int]$RetryCount=20,
+        [Int]$RetryIntervalSec=30
+    )
+
+    Import-DscResource -ModuleName xComputerManagement
+	Import-DscResource -ModuleName xActiveDirectory
+    Import-DscResource -ModuleName xStorage
+    Import-DscResource -ModuleName xShortcut
+    
+    Node localhost
+    {
+        WindowsFeature ADPS
+        {
+            Name = "RSAT-AD-PowerShell"
+            Ensure = "Present"
+        } 
+        
+        WindowsFeature IIS
+        {
+            Name = "Web-Server"
+            Ensure = "Present"
+        }
+        
+        WindowsFeature IISMGT
+        {
+            Name = "Web-Mgmt-Tools"
+            Ensure = "Present"
+            DependsOn = "[WindowsFeature]IIS"
+        }
+        
+        WindowsFeature IISMGTConsole
+        {
+            Name = "Web-Mgmt-Console"
+            Ensure = "Present"
+            DependsOn = "[WindowsFeature]IIS"
+        }
+        
+		xWaitForADDomain DscForestWait 
+        { 
+            DomainName = $DomainName 
+            DomainUserCredential= $Admincreds
+            RetryCount = $RetryCount 
+            RetryIntervalSec = $RetryIntervalSec 
+            DependsOn = "[WindowsFeature]ADPS"      
+        }
+		xComputer DomainJoin
+        {
+            Name = $env:COMPUTERNAME
+            DomainName = $DomainName
+            Credential = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($Admincreds.UserName)", $Admincreds.Password)
+			DependsOn = "[xWaitForADDomain]DscForestWait"
+        }
+        xCreateShortcut Logoff 
+        {
+            Ensure = "Present"
+            ShortCutName = "C:\Users\Public\Desktop\Logoff.lnk"
+            Executable = "C:\Windows\System32\Logoff.exe"
+            Description = "Logoff from Windows"
+            IconLocation = "%SystemRoot%\system32\SHELL32.dll,44"
+        }
+
+        LocalConfigurationManager 
+        {
+		    DebugMode = 'All'
+            RebootNodeIfNeeded = $true
+        }
+    }     
+}
 
 configuration DomainJoin
 {
