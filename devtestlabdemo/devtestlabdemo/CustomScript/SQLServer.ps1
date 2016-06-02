@@ -100,5 +100,16 @@ Invoke-Command  -Credential $credential -ComputerName $env:COMPUTERNAME -ScriptB
 	Create-ADFSFarm -domainCredential $domainCredential -adfsName $fsCertificateSubject -adfsDisplayName $adfsDisplayName -adfsCredentials $adfsCredentials -certificateSubject $fsCertificateSubject
 	#>
 
+	Stop-Service *SQL* -Force
+	
+	New-Item -Path F:\Apps\SQL -ItemType directory
+	New-Item -Path G:\Apps\SQL -ItemType directory
+	
+	New-Item -Path HKLM:\SOFTWARE\Microsoft\MSSQLServer -ItemType directory
+	New-Item -Path HKLM:\SOFTWARE\Microsoft\MSSQLServer\MSSQLServer -ItemType directory
+	
+	New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\MSSQLServer\MSSQLServer -Name DefaultData -Value "F:\Apps\SQL" -PropertyType String
+	New-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\MSSQLServer\MSSQLServer -Name DefaultLog -Value "G:\Apps\SQL" -PropertyType String
+
 } -ArgumentList $PSScriptRoot, $vmAdminPassword, $credential, $fsServiceName, $vmDCname, $resourceLocation
 
