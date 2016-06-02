@@ -63,7 +63,6 @@
                     "configurationFunction": "DSCvmConfigs.ps1\\DIRServer",
                     "properties": {
                         "domainName": "[parameters('domainName')]",
-                        "vmDCName": "[concat(parameters('envPrefix'),parameters('vmDCName'))]",
                         "adminCreds": {
                             "userName": "[parameters('adminUsername')]",
                             "password": "PrivateSettingsRef:adminPassword"

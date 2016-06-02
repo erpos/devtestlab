@@ -190,7 +190,7 @@ configuration SQLserver
         xDisk DataDisk2
         {
             DiskNumber = 2
-            DriveLetter = "E"
+            DriveLetter = "F"
         }
        xWaitforDisk Disk3
         {
@@ -201,7 +201,7 @@ configuration SQLserver
         xDisk DataDisk3
         {
             DiskNumber = 3
-            DriveLetter = "F"
+            DriveLetter = "G"
         }
 		xWaitForADDomain DscForestWait 
         { 
