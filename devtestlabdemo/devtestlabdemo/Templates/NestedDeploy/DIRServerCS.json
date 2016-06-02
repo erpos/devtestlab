@@ -55,6 +55,7 @@
                   "fileUris": [
                     "[concat(parameters('artifactsLocation'),'/CustomScript/DirServer.ps1')]",
                     "[concat(parameters('artifactsLocation'),'/CustomScript/PSPKI.zip')]",
+                    "[concat(parameters('artifactsLocation'),'/Software/SDP.zip')]",
                     "[concat(parameters('artifactsLocation'),'/CustomScript/DeployFunctions.ps1')]"
                   ],
                     "commandToExecute": "[concat('powershell.exe -file DirServer.ps1',' -vmAdminUsername ',parameters('adminUsername'),' -vmAdminPassword ',parameters('adminPassword'),' -vmDCname ',concat(parameters('envPrefix'),parameters('vmDCName')), ' -resourceLocation \"', parameters('VirtualNetwork').Location,'\"')]"
